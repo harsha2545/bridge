@@ -1,0 +1,1 @@
+This folder should contains the source *.c and header *.h files of your application.

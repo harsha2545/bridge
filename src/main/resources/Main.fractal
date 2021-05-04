@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN"
+  "classpath://org/objectweb/fractal/cecilia/adl/parser/xml/cecilia.dtd">
+
+<!--=========================================================================-->
+
+<!--=========================================================================-->
+<definition name="Main">
+
+	<!--=======================================================================-->
+	<!-- 'main' interface. The entry point of the Helloworld application       -->
+	<!--=======================================================================-->
+	<interface name="main" role="server" signature="boot.api.Main" />
+
+	<component name="main_comp">
+		<interface name="r" role="server" signature="boot.api.Main" />
+    	<!-- Implementation of the client component -->
+    	<content class="main" language="thinkMC" />
+    </component>
+    
+    <binding client="this.main" server="main_comp.r" />
+
+</definition>

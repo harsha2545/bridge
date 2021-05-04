@@ -1,0 +1,1 @@
+This folder should contains the source *.fractal files of the application.

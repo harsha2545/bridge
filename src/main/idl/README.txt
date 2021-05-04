@@ -1,0 +1,1 @@
+This folder should contains the source *.idl files of your application.

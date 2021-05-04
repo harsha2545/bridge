@@ -1,0 +1,228 @@
+<?xml version="1.0"?>
+<!-- 
+	Template pom.xml for Cecilia applications.
+	
+	Edit it to better fit your needs.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>bridge</groupId>
+	<artifactId>bridge</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+
+	<!-- ================================================ -->
+	<!--       REPOSITORIES                               -->
+	<repositories>
+		<repository>
+			<id>objectweb-release</id>
+			<name>ObjectWeb Maven Repository</name>
+			<url>http://maven.objectweb.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>objectweb-snapshot</id>
+			<name>ObjectWeb Maven Repository</name>
+			<url>http://maven.objectweb.org/maven2-snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+    
+    <!-- ================================================= -->
+    <!--       PLUGIN REPOSITORIES                               -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>objectweb-release</id>
+            <name>ObjectWeb Maven Repository</name>
+            <url>http://maven.objectweb.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>objectweb-snapshot</id>
+            <name>ObjectWeb Maven Repository</name>
+            <url>http://maven.objectweb.org/maven2-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+	<!-- ============================================================ -->
+	<!--             PROPERTIES                                       -->
+	<properties>
+		<!-- directory which will contain the unpacked Cecilia apis and implementation -->
+		<cecilia.src>
+			${project.build.directory}/lib/cecilia
+		</cecilia.src>
+		<cecilia.version>1.0</cecilia.version>
+		<ceciliaadl.plugin.version>1.0</ceciliaadl.plugin.version>
+	</properties>
+	<!-- ============================================================ -->
+
+	<build>
+		<!-- ======================================================== -->
+		<!--          RESOURCES                                       -->
+		<resources>
+			<!-- include all *.c and *.h inside src/main/c -->
+			<resource>
+				<directory>src/main/c</directory>
+				<includes>
+					<include>**/*.c</include>
+					<include>**/*.h</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.txt</exclude>
+				</excludes>
+			</resource>
+			<!-- include all *.idl inside src/main/idl -->
+			<resource>
+				<directory>src/main/idl</directory>
+				<includes>
+					<include>**/*.idl</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.txt</exclude>
+				</excludes>
+			</resource>
+			<!-- include everything else inside resources, except the patterns seen before -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.h</exclude>
+					<exclude>**/*.c</exclude>
+					<exclude>**/*.idl</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<!-- ========================================================== -->
+
+
+		<!-- ========================================================== -->
+		<!--                 PLUGINS                                    -->
+		<plugins>
+
+			<!-- ==================================================== -->
+			<!-- retrieve fractal-c apis and cecilia implementation -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<artifactItems>
+						<!-- Fractal APIs -->
+						<artifactItem>
+							<groupId>
+								org.objectweb.fractal.cecilia
+							</groupId>
+							<artifactId>fractal-cecilia-api</artifactId>
+							<version>${cecilia.version}</version>
+							<type>jar</type>
+							<outputDirectory>
+								${cecilia.src}
+							</outputDirectory>
+						</artifactItem>
+						<!-- Cecilia -->
+						<artifactItem>
+							<groupId>
+								org.objectweb.fractal.cecilia
+							</groupId>
+							<artifactId>cecilia</artifactId>
+							<version>${cecilia.version}</version>
+							<type>jar</type>
+							<outputDirectory>
+								${cecilia.src}
+							</outputDirectory>
+						</artifactItem>
+						<artifactItem>
+							<groupId>
+								org.objectweb.fractal.cecilia
+							</groupId>
+							<artifactId>cecilia-lib</artifactId>
+							<version>${cecilia.version}</version>
+							<type>jar</type>
+							<outputDirectory>
+								${cecilia.src}
+							</outputDirectory>
+						</artifactItem>
+						<!-- 
+							XXX add other <artifactItem> if the application needs other
+							dependencies 
+					    -->
+					</artifactItems>
+				</configuration>
+			</plugin>
+			<!-- ==================================================== -->
+
+			<!-- ==================================================== -->
+			<!-- to invoke Cecilia ADL Launcher -->
+			<plugin>
+				<groupId>org.objectweb.fractal.cecilia.toolchain</groupId>
+				<artifactId>maven-ceciliaadl-plugin</artifactId>
+				<version>${ceciliaadl.plugin.version}</version>
+				<executions>
+					<execution>
+					    <phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<adl>unix.boot.BootstrappedApplication(Main)</adl>
+					<arguments>
+						<parameter>
+							<name>src-path</name>
+							<value>${cecilia.src}</value>
+						</parameter>
+						<parameter>
+							<name>exec-name</name>
+							<value>main</value>
+						</parameter>
+						<parameter>
+							<name>c-flags</name>
+							<value>-g -c -Wall</value>
+						</parameter>
+					</arguments>
+				</configuration>
+			</plugin>
+			<!-- ==================================================== -->
+		</plugins>
+	</build>
+
+
+</project>
